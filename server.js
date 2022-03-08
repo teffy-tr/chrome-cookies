@@ -2,9 +2,12 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const chrome = require('chrome-cookies-secure');
-
 const app = express();
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 8001;
+
+var redis = require("redis");
+var publisher = redis.createClient();
+publisher.connect();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -12,6 +15,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // API calls
 app.get('/api/hello', (req, res) => {
   res.send({ express: 'Get Chrome Cookies' });
+});
+
+app.get('/api/test/socket', (req, res) => {
+  console.log('Test Cookies');
+  console.log(req.query);
+
+  publisher.publish("notification", JSON.stringify({message: req.query.message, progress: "50/50", page: 2}));
+
+  res.send({message: req.query.message});
 });
 
 app.post('/api/cookies', async (req, res) => {

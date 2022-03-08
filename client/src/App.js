@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
+import { io } from "socket.io-client";
 
 class App extends Component {
   state = {
@@ -8,10 +9,19 @@ class App extends Component {
     responseToPost: '',
   };
 
+
+
   componentDidMount() {
-    this.callApi()
-      .then(res => this.setState({ response: res.express }))
-      .catch(err => console.log(err));
+
+    let socket = io('localhost:3000', {secure: false, rejectUnauthorized : false});
+
+    socket.on("notification", function (data){
+      console.log(data);
+    });
+
+    // this.callApi()
+    //   .then(res => this.setState({ response: res.express }))
+    //   .catch(err => console.log(err));
   }
 
   callApi = async () => {
